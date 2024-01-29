@@ -2,9 +2,9 @@ package domain.poker;
 
 import utils.CardHelper;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Combination enum is used for define the specific poker combination. All combinations are in ascending order according
@@ -22,41 +22,50 @@ enum Combination {
     FOUR_OF_A_KIND(7),
     STRAIGHT_FLUSH(8);
 
-    private final int cost;
+    private final int combinationCost;
 
-    Combination(int cost) {
-        this.cost = cost;
+    Combination(int combinationCost) {
+        this.combinationCost = combinationCost;
     }
 
-    public int getCost() {
-        return cost;
+    public int getCombinationCost() {
+        return combinationCost;
     }
 
-    public static Combination getCombinationByHand(PokerHand pokerhand) {
-        Map<String, List<String>> cards = pokerhand.getCards();
-        Set<String> faceValues = cards.keySet();
-        int faceValuesSize = faceValues.size();
+    public static Map<Combination, Integer> getCombinationWithCostByHand(PokerHand pokerhand) {
+        Map<Integer, List<String>> cards = pokerhand.getCards();
+
+        int faceValuesSize = cards.size();
+        int highCardCost = Collections.max(cards.keySet());
 
         switch (faceValuesSize) {
             case 2:
-                return cards.values().stream().map(List::size).anyMatch(size -> size == 4) ? FOUR_OF_A_KIND : FULL_HOUSE;
+                return Collections.singletonMap(
+                        cards.values().stream().map(List::size).anyMatch(size -> size == 4) ?
+                                FOUR_OF_A_KIND : FULL_HOUSE,
+                        highCardCost
+                );
             case 3:
-                return cards.values().stream().map(List::size).anyMatch(size -> size == 3) ? THREE_OF_A_KIND : TWO_PAIRS;
+                return Collections.singletonMap(
+                        cards.values().stream().map(List::size).anyMatch(size -> size == 3) ?
+                                THREE_OF_A_KIND : TWO_PAIRS,
+                        highCardCost
+                );
             case 4:
-                return PAIR;
+                return Collections.singletonMap(PAIR, highCardCost);
             case 5:
-                boolean sameSuit = CardHelper.isSameSuit(cards);
-                boolean inSequentialOrder = CardHelper.isInSequentialOrder(faceValues);
+                boolean sameSuit = CardHelper.isSameSuit(cards.values());
+                boolean inSequentialOrder = CardHelper.isInSequentialOrder(cards.keySet());
                 if (!sameSuit && inSequentialOrder) {
-                    return STRAIGHT;
+                    return Collections.singletonMap(STRAIGHT, highCardCost);
                 }
                 if (sameSuit && inSequentialOrder) {
-                    return STRAIGHT_FLUSH;
+                    return Collections.singletonMap(STRAIGHT_FLUSH, highCardCost);
                 }
                 if (sameSuit) {
-                    return FLUSH;
+                    return Collections.singletonMap(FLUSH, highCardCost);
                 }
         }
-        return HIGH_CARD;
+        return Collections.singletonMap(HIGH_CARD, highCardCost);
     }
 }

@@ -1,57 +1,68 @@
 package domain.poker;
 
 import domain.AbstractHand;
-import utils.CardHelper;
 import domain.ComparableHand;
+import utils.CardHelper;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * PokerHand class describes player's hand. This class is also implements ComparableHand to "enable" sorting
  */
 public final class PokerHand extends AbstractHand implements ComparableHand<PokerHand> {
 
+    /**
+     * Initial input string
+     */
     private final String cardsAsString;
 
     /**
      * The Map describes player's hand grouped by face value of each card
      */
-    private final Map<String, List<String>> cards;
+    private final Map<Integer, List<String>> cards;
 
     public PokerHand(String cards) {
-        this.cardsAsString = cards;
-        String[] cardsArray = cards.split(" ");
-        this.cards = Arrays.stream(cardsArray)
-                .collect(Collectors.groupingBy(card -> card.substring(0, card.length() - 1),
-                        Collectors.mapping(card -> card.substring(card.length() - 1), Collectors.toList())));
+        try {
+            if (!CardHelper.isHandValid(cards)) {
+                throw new IllegalStateException(String.format("Hand %s is not valid", cards));
+            }
+        } catch (IllegalStateException exception) {
+            System.err.println(exception.getMessage());
+            System.exit(1);
+        } finally {
+            this.cardsAsString = cards;
+            this.cards = CardHelper.handParser(cards);
+        }
     }
 
-    public Map<String, List<String>> getCards() {
+    public Map<Integer, List<String>> getCards() {
         return cards;
     }
 
     /**
-     * Get combination from Combination class and then compare their costs. If both of combinations are
-     * Combination.HIGH_CARD, then we sort each hand in ascending order and get their representation. After that we
-     * just take the last element of each hand and compare their cost
+     * Get combination with high card from Combination class and then compare their costs
      *
      * @param another the another player's hand to be compared.
      */
     @Override
     public int compareTo(PokerHand another) {
-        Combination combinationByHand = Combination.getCombinationByHand(this);
-        Combination anotherCombinationByHand = Combination.getCombinationByHand(another);
-        if (Combination.HIGH_CARD.equals(combinationByHand) && Combination.HIGH_CARD.equals(anotherCombinationByHand)) {
-            Integer[] costsListByFaceValues = CardHelper.getAscendingCostsListByFaceValues(this.getCards().keySet());
-            Integer[] anotherCostsListByFaceValues =
-                    CardHelper.getAscendingCostsListByFaceValues(another.getCards().keySet());
-            return anotherCostsListByFaceValues[anotherCostsListByFaceValues.length - 1]
-                    - costsListByFaceValues[costsListByFaceValues.length - 1];
+        Map.Entry<Combination, Integer> thisHandCombination = Combination.getCombinationWithCostByHand(this)
+                .entrySet()
+                .iterator()
+                .next();
+
+        Map.Entry<Combination, Integer> anotherHandCombination = Combination.getCombinationWithCostByHand(another)
+                .entrySet()
+                .iterator()
+                .next();
+
+        if (thisHandCombination.getKey().equals(anotherHandCombination.getKey())) {
+            return anotherHandCombination.getValue() - thisHandCombination.getValue();
         }
-        return anotherCombinationByHand.getCost() - combinationByHand.getCost();
+
+        return anotherHandCombination.getKey().getCombinationCost() - thisHandCombination.getKey().getCombinationCost();
+
     }
 
     @Override
