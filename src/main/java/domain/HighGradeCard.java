@@ -1,6 +1,8 @@
 package domain;
 
-import java.util.Arrays;
+import java.util.Collections;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * HighGradeCard describes useful representation of cards that have face value as a letter.
@@ -13,6 +15,16 @@ public enum HighGradeCard {
     QUEEN("Q", 12),
     KING("K", 13),
     ACE("A", 14);
+
+    private static final Map<String, HighGradeCard> HIGH_GRADE_CARD_MAP;
+
+    static {
+        ConcurrentHashMap<String, HighGradeCard> map = new ConcurrentHashMap<>();
+        for (HighGradeCard highGradeCard : values()) {
+            map.put(highGradeCard.getId(), highGradeCard);
+        }
+        HIGH_GRADE_CARD_MAP = Collections.unmodifiableMap(map);
+    }
 
     private final String id;
 
@@ -31,10 +43,7 @@ public enum HighGradeCard {
         return cost;
     }
 
-    public static HighGradeCard getById(String cardFaceValue) {
-        return Arrays.stream(values())
-                .filter(highGradeCard -> highGradeCard.getId().equals(cardFaceValue))
-                .findFirst()
-                .orElse(HighGradeCard.DEFAULT);
+    public static HighGradeCard getByCardValue(String cardValue) {
+        return HIGH_GRADE_CARD_MAP.get(cardValue);
     }
 }
