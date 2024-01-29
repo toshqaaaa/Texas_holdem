@@ -61,12 +61,11 @@ public class CardHelper {
      * @param hand - String representation of poker hand
      */
     public static boolean isHandValid(String hand) {
-        String[] separateCards = hand.split(" ");
-        if (separateCards.length != 5) {
+        Set<String> handAsSet = Arrays.stream(hand.split(" ")).collect(Collectors.toSet());
+        if (handAsSet.size() != 5) {
             return false;
         }
-
-        return Arrays.stream(separateCards).allMatch(CardHelper::isCardValid);
+        return handAsSet.stream().allMatch(CardHelper::isCardValid);
     }
 
     /**
