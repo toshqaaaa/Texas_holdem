@@ -24,17 +24,12 @@ public final class PokerHand extends AbstractHand implements ComparableHand<Poke
     private final Map<Integer, List<String>> cards;
 
     public PokerHand(String cards) {
-        try {
-            if (!CardHelper.isHandValid(cards)) {
-                throw new IllegalStateException(String.format("Hand %s is not valid", cards));
-            }
-        } catch (IllegalStateException exception) {
-            System.err.println(exception.getMessage());
+        if (!CardHelper.isHandValid(cards)) {
+            System.err.printf("Hand %s is not valid%n", cards);
             System.exit(1);
-        } finally {
-            this.cardsAsString = cards;
-            this.cards = CardHelper.handParser(cards);
         }
+        this.cardsAsString = cards;
+        this.cards = CardHelper.handParser(cards);
     }
 
     public Map<Integer, List<String>> getCards() {
