@@ -36,6 +36,6 @@ public enum Suit {
     }
 
     public static Suit getBySuitValue(String suit) {
-        return SUIT_MAP.get(suit);
+        return SUIT_MAP.getOrDefault(suit, DEFAULT);
     }
 }

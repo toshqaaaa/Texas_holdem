@@ -44,6 +44,6 @@ public enum HighGradeCard {
     }
 
     public static HighGradeCard getByCardValue(String cardValue) {
-        return HIGH_GRADE_CARD_MAP.get(cardValue);
+        return HIGH_GRADE_CARD_MAP.getOrDefault(cardValue, DEFAULT);
     }
 }
