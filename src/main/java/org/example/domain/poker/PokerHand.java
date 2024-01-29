@@ -1,11 +1,12 @@
-package domain.poker;
+package org.example.domain.poker;
 
-import domain.AbstractHand;
-import domain.ComparableHand;
-import utils.CardHelper;
+import org.example.domain.AbstractHand;
+import org.example.domain.ComparableHand;
+import org.example.utils.CardHelper;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * PokerHand class describes player's hand. This class is also implements ComparableHand to "enable" sorting
@@ -63,6 +64,19 @@ public final class PokerHand extends AbstractHand implements ComparableHand<Poke
 
         return anotherHandCombination.getKey().getCombinationCost() - thisHandCombination.getKey().getCombinationCost();
 
+    }
+
+    @Override
+    public int hashCode() {
+        return cardsAsString.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        PokerHand pokerHand = (PokerHand) o;
+        return Objects.equals(cardsAsString, pokerHand.cardsAsString);
     }
 
     @Override

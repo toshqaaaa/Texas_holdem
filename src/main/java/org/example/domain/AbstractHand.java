@@ -1,4 +1,4 @@
-package domain;
+package org.example.domain;
 
 /**
  * AbstractHand class serves to increase abstraction in the application, to allow for additional expansion of

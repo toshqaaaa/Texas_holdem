@@ -1,7 +1,7 @@
-package utils;
+package org.example.utils;
 
-import domain.HighGradeCard;
-import domain.Suit;
+import org.example.domain.HighGradeCard;
+import org.example.domain.Suit;
 
 import java.util.*;
 import java.util.stream.Collectors;

@@ -1,4 +1,4 @@
-package domain;
+package org.example.domain;
 
 /**
  * ComparableHand serves to increase abstraction in the application (kind of “padding” between the AbstractCard class

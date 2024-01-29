@@ -1,6 +1,6 @@
-package domain.poker;
+package org.example.domain.poker;
 
-import utils.CardHelper;
+import org.example.utils.CardHelper;
 
 import java.util.Collections;
 import java.util.List;
